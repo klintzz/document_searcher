@@ -32,6 +32,7 @@ class Command(BaseCommand):
                 # pages = subprocess.check_output(["pdftotext", os.path.join(rootdir, file_in_dir), "-"])
                 pages = None
                 while pages == None:
+                    print "try"
                     try:
                         os.system('pdftotext ' + os.path.join(rootdir, file_in_dir))
                         f = open(os.path.join(rootdir, document_id+'.txt'), 'r')
