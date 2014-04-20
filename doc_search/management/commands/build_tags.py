@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from doc_search.models import Document, Tag
 
 import os
-import subprocess
 import re
 import gc
 
@@ -31,10 +30,15 @@ class Command(BaseCommand):
                     continue
 
                 # pages = subprocess.check_output(["pdftotext", os.path.join(rootdir, file_in_dir), "-"])
-                os.system('pdftotext ' + os.path.join(rootdir, file_in_dir))
-                f = open(os.path.join(rootdir, document_id+'.txt'), 'r')
-                pages = f.read()
-                f.close()
+                pages = None
+                while pages == None:
+                    try:
+                        os.system('pdftotext ' + os.path.join(rootdir, file_in_dir))
+                        f = open(os.path.join(rootdir, document_id+'.txt'), 'r')
+                        pages = f.read()
+                        f.close()
+                    except IOError:
+                        print "FAILED TO PARSE"
                 # textSet = set()
 
                 for word in pages.split():
