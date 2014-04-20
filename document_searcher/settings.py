@@ -63,6 +63,8 @@ DATABASES = {
         'NAME': 'document_searcher',
         'USER': 'document_searcher',
         'PASSWORD': 'document_searcher',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -80,6 +82,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(BASE_DIR, 'templates').replace('\\','/'),
+    os.path.join(BASE_DIR, 'document_searcher', 'templates').replace('\\', '/'),
 )
 
 # List of callables that know how to import templates from various sources.
