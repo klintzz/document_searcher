@@ -14,6 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         rootdir = '/home/ec2-user/files'
+        roottxtdir = '/home/ec2-user/txtfiles'
 
         files_in_dir = os.listdir(rootdir)
 
@@ -29,19 +30,10 @@ class Command(BaseCommand):
                 if document.done:
                     continue
 
-                # pages = subprocess.check_output(["pdftotext", os.path.join(rootdir, file_in_dir), "-"])
-                pages = None
-                while pages == None:
-                    print "try_parsing"
-                    #try:
-                    os.system('pdftotext ' + os.path.join(rootdir, file_in_dir))
-                    print "after_parsing"
-                    f = open(os.path.join(rootdir, document_id+'.txt'), 'r')
-                    pages = f.read()
-                    f.close()
-                    os.system('rm -f ' + os.path.join(rootdir, document_id+'.txt'))
-                    #except IOError:
-                    #    print "FAILED TO PARSE"
+                f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
+                pages = f.read()
+                f.close()
+
                 # textSet = set()
 
                 for word in pages.split():
@@ -49,7 +41,7 @@ class Command(BaseCommand):
 
                     if len(processed) > 2 and processed not in STOP_WORDS and not processed.isdigit():
                         # textSet.add(processed)
-			# print "creating: " + processed
+
                         tag, created = Tag.objects.get_or_create(text=processed)
 
                         document.tags.add(tag)
