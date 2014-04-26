@@ -139,4 +139,4 @@ class Command(BaseCommand):
                             self.add_tag(document, processed)
 
                 document.done = True
-                document.save
+                document.save()
