@@ -14,3 +14,4 @@ class Document(models.Model):
     # document_text = models.TextField()
     tags = models.ManyToManyField(Tag)
     done = models.BooleanField(default=False)
+    indexed = models.BooleanField(default=False)
