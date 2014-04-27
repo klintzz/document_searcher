@@ -102,46 +102,45 @@ class Command(BaseCommand):
         # rootdir = '/Users/ruven/Documents/documents/files'
         # roottxtdir = '/Users/ruven/Documents/documents/textfiles'
 
-        files_in_dir = os.listdir(rootdir)
+        for root, dirs, files in os.walk(rootdir):
+            for file_in_dir in files:
+                if file_in_dir.endswith(".pdf"):
 
-        for file_in_dir in files_in_dir:
-            if file_in_dir.endswith(".pdf"):
+                    document_id = re.sub('[^0-9]+', '', file_in_dir)
 
-                document_id = re.sub('[^0-9]+', '', file_in_dir)
+                    document, created = Document.objects.get_or_create(file_name=file_in_dir, id=document_id)
 
-                document, created = Document.objects.get_or_create(file_name=file_in_dir, id=document_id)
+                    print document
 
-                print document
+                    if document.done:
+                        continue
 
-                if document.done:
-                    continue
+                    print "new"
 
-                print "new"
+                    f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
+                    pages = f.read()
+                    f.close()
 
-                f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
-                pages = f.read()
-                f.close()
+                    doc_processed = process_text(pages)
 
-                doc_processed = process_text(pages)
+                    orgs = self.build_orgs(doc_processed)
 
-                orgs = self.build_orgs(doc_processed)
+                    if len(orgs) > 0:
+                        print orgs
 
-                if len(orgs) > 0:
-                    print orgs
+                        document.indexed = True
+                        text_set = self.get_words_from_doc(doc_processed.split())
 
-                    document.indexed = True
-                    text_set = self.get_words_from_doc(doc_processed.split())
-
-                    for processed in text_set:
-                        self.add_tag(document, processed)
-
-                    for org in orgs:
-                        for processed in process_text(org).split():
-                            self.add_tag(document, processed)
-                        for processed in org.split():
+                        for processed in text_set:
                             self.add_tag(document, processed)
 
-                document.done = True
-                document.save()
+                        for org in orgs:
+                            for processed in process_text(org).split():
+                                self.add_tag(document, processed)
+                            for processed in org.split():
+                                self.add_tag(document, processed)
 
-                db.reset_queries()
+                    document.done = True
+                    document.save()
+
+                    db.reset_queries()
