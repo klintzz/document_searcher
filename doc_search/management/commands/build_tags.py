@@ -31,6 +31,9 @@ import re
 STOP_WORDS = set(["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  "an", "and", "another", "any","anyhow","anyone","anything","anyway", "anywhere", "are", "around", "as",  "at", "back","be","became", "because","become","becomes", "becoming", "been", "before", "beforehand", "behind", "being", "below", "beside", "besides", "between", "beyond", "bill", "both", "bottom","but", "by", "call", "can", "cannot", "cant", "co", "con", "could", "couldnt", "cry", "de", "describe", "detail", "do", "done", "down", "due", "during", "each", "eg", "eight", "either", "eleven","else", "elsewhere", "empty", "enough", "etc", "even", "ever", "every", "everyone", "everything", "everywhere", "except", "few", "fifteen", "fify", "fill", "find", "fire", "first", "five", "for", "former", "formerly", "forty", "found", "four", "from", "front", "full", "further", "get", "give", "go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in", "inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly", "least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more", "moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never", "nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere", "of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our", "ours", "ourselves", "out", "over", "own","part", "per", "perhaps", "please", "put", "rather", "re", "same", "see", "seem", "seemed", "seeming", "seems", "serious", "several", "she", "should", "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone", "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten", "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third", "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up", "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence", "whenever", "where", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whoever", "whole", "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your", "yours", "yourself", "yourselves", "the"])
 STOP_WORDS.update(["page", "pages", "yes"])
 
+def get_number(text):
+    return re.sub('[^0-9]+', '', text)
+
 def process_text(text):
     return re.sub('\s+', ' ', re.sub('[^0-9a-zA-Z\s]+', '', text)).lower()
 
@@ -94,7 +97,6 @@ class Command(BaseCommand):
         tag, created = Tag.objects.get_or_create(text=processed)
         document.tags.add(tag)
 
-
     def handle(self, *args, **options):
         rootdir = '/home/ec2-user/files'
         roottxtdir = '/home/ec2-user/txtfiles'
@@ -102,45 +104,49 @@ class Command(BaseCommand):
         # rootdir = '/Users/ruven/Documents/documents/files'
         # roottxtdir = '/Users/ruven/Documents/documents/textfiles'
 
-        for root, dirs, files in os.walk(rootdir):
-            for file_in_dir in files:
-                if file_in_dir.endswith(".pdf"):
+        def sort_files(x, y):
+            return get_number(x) - get_number(y)
 
-                    document_id = re.sub('[^0-9]+', '', file_in_dir)
+        files_in_dir = sorted(os.listdir(rootdir), cmp=sort_files)
 
-                    document, created = Document.objects.get_or_create(file_name=file_in_dir, id=document_id)
+        for file_in_dir in files_in_dir:
+            if file_in_dir.endswith(".pdf"):
 
-                    print document
+                document_id = get_number(file_in_dir)
 
-                    if document.done:
-                        continue
+                document, created = Document.objects.get_or_create(file_name=file_in_dir, id=document_id)
 
-                    print "new"
+                print document
 
-                    f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
-                    pages = f.read()
-                    f.close()
+                if document.done:
+                    continue
 
-                    doc_processed = process_text(pages)
+                print "new"
 
-                    orgs = self.build_orgs(doc_processed)
+                f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
+                pages = f.read()
+                f.close()
 
-                    if len(orgs) > 0:
-                        print orgs
+                doc_processed = process_text(pages)
 
-                        document.indexed = True
-                        text_set = self.get_words_from_doc(doc_processed.split())
+                orgs = self.build_orgs(doc_processed)
 
-                        for processed in text_set:
+                if len(orgs) > 0:
+                    print orgs
+
+                    document.indexed = True
+                    text_set = self.get_words_from_doc(doc_processed.split())
+
+                    for processed in text_set:
+                        self.add_tag(document, processed)
+
+                    for org in orgs:
+                        for processed in process_text(org).split():
+                            self.add_tag(document, processed)
+                        for processed in org.split():
                             self.add_tag(document, processed)
 
-                        for org in orgs:
-                            for processed in process_text(org).split():
-                                self.add_tag(document, processed)
-                            for processed in org.split():
-                                self.add_tag(document, processed)
+                document.done = True
+                document.save()
 
-                    document.done = True
-                    document.save()
-
-                    db.reset_queries()
+                db.reset_queries()
