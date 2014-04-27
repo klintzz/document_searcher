@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from doc_search.models import Document, Tag
+from django import db
 
 import os
 import re
@@ -115,6 +116,8 @@ class Command(BaseCommand):
                 if document.done:
                     continue
 
+                print "new"
+
                 f = open(os.path.join(roottxtdir, document_id+'.txt'), 'r')
                 pages = f.read()
                 f.close()
@@ -140,3 +143,5 @@ class Command(BaseCommand):
 
                 document.done = True
                 document.save()
+
+                db.reset_queries()
