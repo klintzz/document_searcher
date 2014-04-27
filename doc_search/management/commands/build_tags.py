@@ -105,7 +105,7 @@ class Command(BaseCommand):
         # roottxtdir = '/Users/ruven/Documents/documents/textfiles'
 
         def sort_files(x, y):
-            return get_number(x) - get_number(y)
+            return int(get_number(x)) - int(get_number(y))
 
         files_in_dir = sorted(os.listdir(rootdir), cmp=sort_files)
 
