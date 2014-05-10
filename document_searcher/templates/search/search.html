@@ -19,7 +19,7 @@
 
             {% for result in page.object_list %}
                 <p>
-                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.file_name }}</a>
+                    <a href="http://www.adviserinfo.sec.gov/Iapd/Content/Common/crd_iapd_Brochure.aspx?BRCHR_VRSN_ID={{result.object.id}}">{{ result.object.file_name }}</a>
                 </p>
             {% empty %}
                 <p>No results found.</p>
