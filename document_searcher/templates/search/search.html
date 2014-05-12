@@ -1,39 +1,48 @@
-{# {% extends 'base.html' %} #}
+{% extends 'base.html' %}
 
 {% block content %}
-    <h2>Search</h2>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Document Search</a>
+        </div>
+        <!-- <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/login/">Login</a></li>
+          </ul>
+        </div> -->
+      </div>
+    </div>
+    <div class="container">
+        <h1>Search Documents</h1>
 
-    <form method="get" action=".">
-        <table>
-            {{ form.as_table }}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Search">
-                </td>
-            </tr>
-        </table>
+        <form method="get" action=".">
+            <input id="id_q" name="q" type="text" value="{{ query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
 
-        {% if query %}
-            <h3>Results</h3>
+            {% if query %}
+                <h3>Results</h3>
 
-            {% for result in page.object_list %}
-                <p>
-                    <a href="http://www.adviserinfo.sec.gov/Iapd/Content/Common/crd_iapd_Brochure.aspx?BRCHR_VRSN_ID={{result.object.id}}">{{ result.object.file_name }}</a>
-                </p>
-            {% empty %}
-                <p>No results found.</p>
-            {% endfor %}
+                {% for result in page.object_list %}
+                    <p>
+                        <a href="http://www.adviserinfo.sec.gov/Iapd/Content/Common/crd_iapd_Brochure.aspx?BRCHR_VRSN_ID={{result.object.id}}">{{ result.object.file_name }}</a>
+                    </p>
+                {% empty %}
+                    <p>No results found.</p>
+                {% endfor %}
 
-            {% if page.has_previous or page.has_next %}
-                <div>
-                    {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-                    |
-                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
-                </div>
+                {% if page.has_previous or page.has_next %}
+                    <div>
+                        {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+                        |
+                        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                {# Show some example queries to run, maybe query syntax, something else? #}
             {% endif %}
-        {% else %}
-            {# Show some example queries to run, maybe query syntax, something else? #}
-        {% endif %}
-    </form>
+        </form>
+
+    </div>
 {% endblock %}

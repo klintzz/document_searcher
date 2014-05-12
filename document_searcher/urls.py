@@ -4,7 +4,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 from haystack.forms import SearchForm
-from haystack.views import SearchView
 
 from doc_search.views import ProtectedSearchView
 
