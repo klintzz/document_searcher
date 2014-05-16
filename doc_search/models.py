@@ -15,5 +15,5 @@ class Document(models.Model):
     # tags = models.ManyToManyField(Tag)
     done = models.BooleanField(default=False)
     indexed = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=true)
+    created = models.DateTimeField(auto_now_add=True)
     search_indexed = models.DateTimeField(null=True)

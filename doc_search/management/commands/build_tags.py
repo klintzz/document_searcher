@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
-from doc_search.models import Document, Tag
+from doc_search.models import Document
 from django import db
+from django.conf import settings
 
 import os
 import re
@@ -93,16 +94,17 @@ class Command(BaseCommand):
 
     #     return filtered_orgs
 
-    def add_tag(self, document, processed):
-        tag, created = Tag.objects.get_or_create(text=processed)
-        document.tags.add(tag)
+    # def add_tag(self, document, processed):
+    #     tag, created = Tag.objects.get_or_create(text=processed)
+    #     document.tags.add(tag)
 
     def handle(self, *args, **options):
-        rootdir = '/home/ec2-user/files'
-        roottxtdir = '/home/ec2-user/txtfiles'
-
-        # rootdir = '/Users/ruven/Documents/documents/files'
-        # roottxtdir = '/Users/ruven/Documents/documents/textfiles'
+        if not settings.DEBUG:
+            rootdir = '/home/ec2-user/files'
+            roottxtdir = '/home/ec2-user/txtfiles'
+        else:
+            rootdir = '/Users/ruven/Documents/documents/files'
+            roottxtdir = '/Users/ruven/Documents/documents/textfiles'
 
         def sort_files(x, y):
             return int(get_number(x)) - int(get_number(y))
@@ -118,7 +120,7 @@ class Command(BaseCommand):
 
                 print document
 
-                if document.done:
+                if document.done and not settings.DEBUG:
                     continue
 
                 print "new"
@@ -131,20 +133,21 @@ class Command(BaseCommand):
 
                 orgs = self.build_orgs(doc_processed)
 
-                if len(orgs) > 0:
+                if len(orgs) > 0 or settings.DEBUG:
                     print orgs
 
                     document.indexed = True
-                    text_set = self.get_words_from_doc(doc_processed.split())
+                    document.document_text = doc_processed
+                    # text_set = self.get_words_from_doc(doc_processed.split())
 
-                    for processed in text_set:
-                        self.add_tag(document, processed)
+                    # for processed in text_set:
+                    #     self.add_tag(document, processed)
 
-                    for org in orgs:
-                        for processed in process_text(org).split():
-                            self.add_tag(document, processed)
-                        for processed in org.split():
-                            self.add_tag(document, processed)
+                    # for org in orgs:
+                    #     for processed in process_text(org).split():
+                    #         self.add_tag(document, processed)
+                    #     for processed in org.split():
+                    #         self.add_tag(document, processed)
 
                 document.done = True
                 document.save()
