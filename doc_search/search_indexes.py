@@ -5,6 +5,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     # tags = indexes.CharField(model_attr='tags', null=True)
     # document_text = indexes.CharField(model_attr='document_text')
+    file_name = indexes.CharField(model_attr='file_name')
 
     def get_model(self):
         return Document

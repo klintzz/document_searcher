@@ -70,16 +70,23 @@ DATABASES = {
 
 # Haystack
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        # 'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        # 'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-        'TIMEOUT': 3600,
-    },
-}
+if DEBUG:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+            'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+        },
+    }
+
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'http://127.0.0.1:9200/',
+            'INDEX_NAME': 'haystack',
+            'TIMEOUT': 3600,
+        },
+    }
 
 ALLOWED_HOSTS = ['.com']
 
@@ -118,3 +125,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if not DEBUG:
+    ROOT_FILE_DIR = '/home/ec2-user/files'
+    ROOT_TXT_DIR = '/home/ec2-user/txtfiles'
+    ROOT_NEW_DIR = '/home/ec2-user/newfiles'
+    NEW_FILE_INCREMENT = 10000
+else:
+    ROOT_FILE_DIR = '/Users/ruven/Documents/documents/files'
+    ROOT_TXT_DIR = '/Users/ruven/Documents/documents/textfiles'
+    ROOT_NEW_DIR = '/Users/ruven/Documents/documents/newfiles'
+    NEW_FILE_INCREMENT = 50
