@@ -12,9 +12,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        chunk = 50.
+        chunk = 500
         length = len(Document.objects.filter(indexed=True, search_indexed=None))
-        pages = int(math.ceil(length / chunk))
+        pages = int(math.ceil(length / float(chunk)))
 
         print "total items: %s" % length
         print "total pages: %s" % pages
