@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from doc_search.models import Document
 from haystack.query import SearchQuerySet
-from django.core.paginator import Paginator
+import math
 
 from django.utils import timezone
 
@@ -12,10 +12,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        paginator = Paginator( Document.objects.filter(indexed=True, search_indexed=None), 500)
+        chunk = 50.
+        length = len(Document.objects.filter(indexed=True, search_indexed=None))
+        pages = math.ceil(length / chunk)
 
-        for page in range(1, paginator.num_pages):
-            for doc in paginator.page(page).object_list:
+        print "total items: %s" % length
+        print "total pages: %s" % pages
+
+        for page in xrange(0, pages - 1):
+            docs = (Document.objects.filter(indexed=True, search_indexed=None))[0:chunk]
+
+            for doc in docs:
 
                 print doc
 
@@ -26,4 +33,4 @@ class Command(BaseCommand):
 
                     doc.save()
 
-            print "done processing page %s" % page
+            print "done processing page %s" % (page + 1)
