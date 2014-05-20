@@ -19,7 +19,7 @@ class Command(BaseCommand):
         print "total items: %s" % length
         print "total pages: %s" % pages
 
-        for page in xrange(0, pages - 1):
+        for page in xrange(0, pages):
             docs = (Document.objects.filter(indexed=True, search_indexed=None))[0:chunk]
 
             for doc in docs:
