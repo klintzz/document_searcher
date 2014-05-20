@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
         chunk = 50.
         length = len(Document.objects.filter(indexed=True, search_indexed=None))
-        pages = math.ceil(length / chunk)
+        pages = int(math.ceil(length / chunk))
 
         print "total items: %s" % length
         print "total pages: %s" % pages
