@@ -11,9 +11,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        docs = Document.objects.filter(search_indexed=None)
+        docs = Document.objects.filter(indexed=True, search_indexed=None)[:10000]
 
-        for doc in docs:
+	for doc in docs:
             print doc
 
             if len(SearchQuerySet().filter(file_name=doc.file_name)) > 0:
