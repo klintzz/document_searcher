@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 from doc_search.models import Document
 from haystack.query import SearchQuerySet
+from django.core.paginator import Paginator
 
 from django.utils import timezone
 
@@ -11,14 +12,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        docs = Document.objects.filter(indexed=True, search_indexed=None)[:10000]
+        paginator = Paginator( Document.objects.filter(indexed=True, search_indexed=None), 500)
 
-	for doc in docs:
-            print doc
+        for page in range(1, paginator.num_pages):
+            for doc in paginator.page(page).objects_list:
 
-            if len(SearchQuerySet().filter(file_name=doc.file_name)) > 0:
-                print "marking!"
+                print doc
 
-                doc.search_indexed = timezone.now()
+                if len(SearchQuerySet().filter(file_name=doc.file_name)) > 0:
+                    print "marking!"
 
-                doc.save()
+                    doc.search_indexed = timezone.now()
+
+                    doc.save()
+
+            print "done processing page %s" % page
