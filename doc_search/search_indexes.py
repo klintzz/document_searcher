@@ -11,7 +11,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
         return Document
 
     def index_queryset(self, using=None):
-        return self.get_model().objects.filter(indexed=True)
+        return self.get_model().objects.filter(indexed=True, seach_indexed=None)
 
     # def prepare_tags(self, obj):
     #     return [tag.text for tag in obj.tags.all()]
