@@ -37,6 +37,7 @@ class Command(BaseCommand):
                 os.remove(tmpfilename)
             else:
                 if(os.path.isfile(os.path.join(settings.ROOT_NEW_DIR, tmpfilename))):
+                    os.remove(tmpfilename)
                     print("Exists\n")
                 else:
                     shutil.move(tmpfilename, settings.ROOT_NEW_DIR)
