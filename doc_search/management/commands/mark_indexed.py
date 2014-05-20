@@ -15,7 +15,7 @@ class Command(BaseCommand):
         paginator = Paginator( Document.objects.filter(indexed=True, search_indexed=None), 500)
 
         for page in range(1, paginator.num_pages):
-            for doc in paginator.page(page).objects_list:
+            for doc in paginator.page(page).object_list:
 
                 print doc
 
