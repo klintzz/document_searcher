@@ -7,6 +7,9 @@ import time
 import random
 import os
 import shutil
+import logging
+
+logger = logging.getLogger(settings.LOGGER_NAME)
 
 
 def get_url(id):
@@ -16,6 +19,8 @@ class Command(BaseCommand):
     help = 'parse files into tags'
 
     def handle(self, *args, **options):
+        logger.info('&&&&&&& Pulling new docs! &&&&&&')
+
         start_id = Document.objects.latest('id').id + 1
 
 
@@ -25,6 +30,7 @@ class Command(BaseCommand):
             tmpfilename = "{0}.pdf".format(i)
 
             print tmpfilename
+            logger.info(tmpfilename)
 
             urllib.urlretrieve(url, tmpfilename)
 
@@ -34,13 +40,16 @@ class Command(BaseCommand):
 
             if ("No data found" in start):
                 print "Fail\n"
+                logger.info("Fail")
                 os.remove(tmpfilename)
             else:
                 if(os.path.isfile(os.path.join(settings.ROOT_NEW_DIR, tmpfilename))):
                     os.remove(tmpfilename)
                     print("Exists\n")
+                    logger.info("Exists")
                 else:
                     shutil.move(tmpfilename, settings.ROOT_NEW_DIR)
                     print("Moving\n")
+                    logger.info("Moving")
 
             time.sleep(random.random() + .5)

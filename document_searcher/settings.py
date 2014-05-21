@@ -126,13 +126,60 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = '/static/'
 
+LOGGER_NAME = 'document_puller.logger'
+
 if not DEBUG:
     ROOT_FILE_DIR = '/home/ec2-user/files'
     ROOT_TXT_DIR = '/home/ec2-user/txtfiles'
     ROOT_NEW_DIR = '/home/ec2-user/newfiles'
+    LOG_FILE = '/home/ec2-user/document_puller.log'
+    REQUEST_LOG_FILE = '/home/ec2-user/document_puller_request.log'
     NEW_FILE_INCREMENT = 1000
 else:
     ROOT_FILE_DIR = '/Users/ruven/Documents/documents/files'
     ROOT_TXT_DIR = '/Users/ruven/Documents/documents/textfiles'
     ROOT_NEW_DIR = '/Users/ruven/Documents/documents/newfiles'
+    LOG_FILE = '/Users/ruven/Documents/documents/document_puller.log'
+    REQUEST_LOG_FILE = '/Users/ruven/Documents/documents/document_puller_request.log'
     NEW_FILE_INCREMENT = 50
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'standard': {
+            'format': '%(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'request_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': REQUEST_LOG_FILE,
+        },
+        'file' : {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE,
+            'formatter': 'standard',
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['request_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        LOGGER_NAME: {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate' : True,
+        },
+    },
+}

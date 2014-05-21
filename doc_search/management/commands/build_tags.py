@@ -6,6 +6,10 @@ from django.conf import settings
 import os
 import re
 
+import logging
+
+logger = logging.getLogger(settings.LOGGER_NAME)
+
 # class Org:
 #     def __init__(self, text):
 #         self._text = re.sub('[^0-9a-zA-Z ]+', '', text.lower())
