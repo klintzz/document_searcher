@@ -130,7 +130,7 @@ if not DEBUG:
     ROOT_FILE_DIR = '/home/ec2-user/files'
     ROOT_TXT_DIR = '/home/ec2-user/txtfiles'
     ROOT_NEW_DIR = '/home/ec2-user/newfiles'
-    NEW_FILE_INCREMENT = 10000
+    NEW_FILE_INCREMENT = 1000
 else:
     ROOT_FILE_DIR = '/Users/ruven/Documents/documents/files'
     ROOT_TXT_DIR = '/Users/ruven/Documents/documents/textfiles'
