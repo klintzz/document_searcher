@@ -20,7 +20,7 @@ class Command(BaseCommand):
         logger.info("$$$$$$ Marking as indexed $$$$$$")
 
         chunk = 500
-        length = len(Document.objects.filter(indexed=True, search_indexed=None))
+        length = Document.objects.filter(indexed=True, search_indexed=None).count()
         pages = int(math.ceil(length / float(chunk)))
 
         print "total items: %s" % length
